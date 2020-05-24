@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">NewsApp</string>
+
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="back_button">Back button</string>
+    <string name="view_full_article">View Full Article</string>
+    <string name="fetching_news">Fetching News</string>
+    <string name="enter_search_term">Enter Search Term :</string>
+    <string name="coronavirus">Coronavirus</string>
+    <string name="fetching_chart">Fetching Chart</string>
+    <string name="search">Search</string>
+    <string name="fetching_bookmarks">Fetching Bookmarks</string>
+    <string name="no_bookmarked_articles">No Bookmarked Articles</string>
+    <string name="no_search_results_found">No Search Results Found</string>
+    <string name="newsapp">NewsApp</string>
+</resources>

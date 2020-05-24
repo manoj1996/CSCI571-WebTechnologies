@@ -1,0 +1,128 @@
+.business
+{
+    background-color:#0080FF;
+    color:white;
+    padding:1%;
+}
+
+.world
+{
+    background-color:#7F00FF;
+    color:white;
+    padding:1%;
+}
+
+.politics
+{
+    background-color:#00994C;
+    color:white;
+    padding:1%;
+}
+.technology
+{
+    background-color:#CCCC00;
+    color:black;
+    padding:1%;
+}
+.sport
+{
+    background-color:#FF9933;
+    color:black;
+    padding:1%;
+}
+.other
+{
+    background-color:#808080;
+    color:white;
+    padding:1%;
+}
+
+.modal {
+    font-size: 12px;
+}
+.modal > .header {
+    width: 100%;
+    border-bottom: 1px solid gray;
+    font-size: 18px;
+    text-align: center;
+    padding: 5px;
+}
+.modal > .content {
+    width: 100%;
+    padding: 10px 5px;
+}
+.modal > .actions {
+    width: 100%;
+    padding: 10px 5px;
+    margin: auto;
+    text-align: center;
+}
+.modal > .close {
+    cursor: pointer;
+    position: absolute;
+    display: block;
+    padding: 2px 5px;
+    line-height: 20px;
+    right: -10px;
+    top: -10px;
+    font-size: 24px;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #cfcece;
+}
+
+@media(max-width: 800px) {
+    .card-container{
+        width: 96%;
+    }
+    .card-img{
+        float:left;
+        padding:1%;
+        border: solid 1px lightgray;
+        border-radius:1%;
+        max-width: 120%;
+        object-fit: cover;
+    }
+    .card-img-detailed{
+        float:left;
+        padding:0.1%;
+        border: solid 1px lightgray;
+        object-fit:cover;
+    }
+    .detailed-share-icons{
+        margin-left:10%;
+    }
+
+    .detailed-description{
+        font-size: 80%;
+        font-style: normal;
+    }
+}
+
+@media(min-width: 800px) {
+    .card-container{
+        width: 98%;
+    }
+    .card-img{
+        float:left;
+        padding:1%;
+        border: solid 1px lightgray;
+        object-fit:cover;
+        border-radius:1%;
+    }
+    .card-img-detailed{
+        float:left;
+        padding:0.1%;
+        border: solid 1px lightgray;
+        object-fit:cover;
+    }
+    .detailed-share-icons{
+        margin-left:75%;
+    }
+    .detailed-description{
+        font-style: normal;
+        font-size: 80%;
+        margin-left: 1%;
+        margin-right: 1%;
+    }
+}

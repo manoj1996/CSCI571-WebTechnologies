@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/pull_to_refresh_bookmark"
+        android:layout_width="match_parent"
+        android:layout_margin="5dp"
+        android:layout_height="wrap_content">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/news_bookmark_list"
+            android:layout_width="match_parent"
+            android:elevation="5dp"
+            android:layout_above="@id/bottom_navigation"
+            android:layout_height="match_parent"
+            android:divider="@drawable/list_divider"
+            android:dividerHeight="10dp"
+            />
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <ProgressBar
+        android:id="@+id/progressBarBookmark"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="150dp"
+        android:progressDrawable="@drawable/circular_progress_bar"
+        android:progressTint="#FFFFFF" />
+    <TextView
+        android:id="@+id/progressIndicatorBookmark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/progressBarBookmark"
+        android:layout_centerHorizontal="true"
+        android:text="@string/fetching_bookmarks"/>
+    <TextView
+        android:id="@+id/no_bookmark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/no_bookmarked_articles"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
+</RelativeLayout>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="190dp"
+    android:layout_height="250dp"
+    android:id="@+id/bookmark_row">
+    <RelativeLayout
+        android:id="@+id/bookmark_news_card"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/layout_bg">
+        <ImageView
+            android:id="@+id/thumbnail_bookmark"
+            android:layout_width="match_parent"
+            android:layout_height="125dp"
+            android:layout_alignParentStart="true"
+            android:elevation="5dp"
+            android:scaleType="fitXY"
+            />
+
+        <ImageView
+            android:id="@+id/news_bookmark_bookmark"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginEnd="10dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"/>
+
+        <TextView
+            android:id="@+id/title_bookmark"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/thumbnail_bookmark"
+            android:maxLines="3"
+            android:ellipsize="end"
+            android:textSize="15sp"
+            android:padding="5dp"
+            android:elevation="5dp"
+            android:fontFamily="sans-serif-black"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:paddingBottom="5dp">
+            <TextView
+                android:id="@+id/date_bookmark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:elevation="5dp"
+                android:textColor="@color/genre"
+                android:textSize="13sp" />
+            <View
+                android:id="@+id/date_section_sep_bookmark"
+                android:layout_width="1.5dp"
+                android:layout_height="14dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="3dp"
+                android:background="@color/colorPrimary"/>
+
+            <TextView
+                android:id="@+id/section_bookmark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:elevation="5dp"
+                android:textColor="@color/genre"
+                android:textSize="13sp" />
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

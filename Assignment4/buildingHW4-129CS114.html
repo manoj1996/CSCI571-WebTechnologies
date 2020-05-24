@@ -1,0 +1,141 @@
+<html>
+    <head>
+        <title>Parsing JSON</title>
+        <style type="text/css">
+        .divBox{
+            height: 300px;
+            width: 600px;
+            align-content: center;
+            text-align: center;
+            margin: 0 auto;
+            padding-top: 150px;
+        }
+        .divHeading{
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: bold;
+            font-size: 20px;
+
+        }
+        .submitButton{
+            padding: 3px 3px;
+            text-align: center;
+            display: inline-block;
+            background-color: white;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+
+        </style>
+        <script type="text/javascript">
+        function viewJSON(formValue){
+            var URL = formValue.URL.value;
+            if(!URL){
+                window.alert("Please enter a valid JSON file");
+                return;
+            }
+            function loadJSON(url){
+                xmlhttp = new XMLHttpRequest();
+                xmlhttp.open("GET", url, false);
+                xmlhttp.send();
+                jsonObj = JSON.parse(xmlhttp.responseText);
+                return jsonObj;
+            }
+            html_text = "";
+            try{
+                jsonObj = loadJSON(URL);
+            }
+            catch{
+                window.alert("Invalid URL entered!!\nPlease try again.")
+                return;
+            }
+            if(jsonObj.Mainline.Table.Row == undefined || jsonObj.Mainline.Table.Row.length == 0){
+                window.alert("Entered JSON file contains NO buildings");
+                return;
+            }
+            
+            jsonObj.onload = generateHTML(jsonObj);
+            popUpWindow = window.open('', '_blank', 'toolbar=0,location=0,menubar=0,height=600,width=1000');
+            popUpWindow.document.write(html_text);
+            popUpWindow.document.close();
+
+            function generateHTML(jsonObj){
+                root = jsonObj.DocumentElement;
+                html_text = "<html><head><title>List Of Tallest Buildings</title></head><body>";
+                html_text += "<table border='2'>";
+                html_text += "<tbody>";
+                html_text += "<tr>";
+                headers =  jsonObj.Mainline.Table.Header.Data;
+                for(i = 0; i < headers.length; i++){
+                    header = headers[i];
+                    html_text += "<th>" + header + "</th>";
+                }
+                html_text += "</tr>";
+                buildingList = jsonObj.Mainline.Table.Row;
+                
+                for(i = 0; i < buildingList.length; i++){
+                    html_text += "<tr>"
+                    buildingInfo = buildingList[i];
+                    if(!!buildingInfo.Rank){
+                        html_text += "<td style='text-align:left; align-content:left;'>" +  buildingInfo.Rank + "</td>";
+                    } else{
+                        html_text += "<td>" + "</td>";
+                    }
+                    if(!!buildingInfo.Name){
+                        html_text += "<td style='text-align:left; align-content:left;'>" + buildingInfo.Name + "</td>";
+                    } else {
+                        html_text += "<td>" + "</td>";
+                    }
+                    hubs = buildingInfo.Hubs.Hub
+                    if(hubs.length > 0){
+                        html_text += "<td style='text-align:left; align-content:left; padding:1%'> <ul style='list-style-type:disc;'>";
+                        index = 0;
+                        for(j = 0; j < hubs.length; j++){
+                            if(index == 0 && !!hubs[j]){
+                                html_text += "<li style='font-weight:bold'>" + hubs[j] + "</li>";
+                                index = 1;
+                            }
+                            else if(!!hubs[j]){
+                                html_text += "<li>" + hubs[j] + "</li>";
+                            }
+                        }
+                        html_text += "</ul></td>"
+                    } else{
+                        html_text += "<td>" + "</td>";
+                    }
+                    if(!!buildingInfo.Height){
+                        html_text += "<td style='text-align:left; align-content:left;'>" + buildingInfo.Height + "</td>";
+                    } else{
+                        html_text += "<td>" + "</td>";
+                    }
+                    if(!!buildingInfo.HomePage){
+                        html_text += "<td style='text-align:left; align-content:left;'>" + "<a href='" + buildingInfo.HomePage + "'>" + buildingInfo.HomePage + "</a>" + "</td>";
+                    } else {
+                        html_text += "<td>" + "</td>";
+                    }
+                    if(!!buildingInfo.Logo){
+                        html_text += "<td>" + "<img src='"+ buildingInfo.Logo + "' style='height:200px; width:200px;'/>" + "</td>";
+                    } else{
+                        html_text += "<td height='200' width='200'>" + "</td>";
+                    }
+
+                    html_text += "</tr>";
+                    
+                }
+                html_text += "</tbody>";
+                html_text += "</table>";
+                html_text += "</bo" + "<dy> </html>";
+            }
+
+        }
+        </script>
+    </head>
+    <body>
+        <div class = "divBox">
+            <div class = "divHeading">Enter URL for list of tallest buildings JSON File</div><br/>
+            <form name = "building" method = "POST" id = "building">
+                <input type = "text" name = "URL" maxlength = "255" size = "25" value = "buildinglist.json"/><br/></br>
+                <input type = "button" name = "submit" value = "Submit Query" class = "submitButton" onclick = "viewJSON(this.form)"/>
+            </form>
+        </div>
+    </body>
+</html>

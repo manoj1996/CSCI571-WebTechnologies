@@ -1,0 +1,829 @@
+<html>
+    <head>
+        <title>Google News</title>
+        <link rel="stylesheet" href="/static/googleNews.css" type="text/css">
+        <script src="https://d3js.org/d3.v4.js"></script>
+        <script src="https://cdn.jsdelivr.net/gh/holtzy/D3-graph-gallery@master/LIB/d3.layout.cloud.js"></script>
+        <script type="text/javascript">
+        function changeGoogleNewsColor(){
+            document.getElementById("form-div").style.display = "none";
+            document.getElementById("news-scroll").style.display = "none";
+            document.getElementById("news-scroll2").style.display = "none";
+            document.getElementById("showMoreOrLess").style.display = "none";
+            document.getElementById("display-content").style.display = "block";
+            var google = document.getElementById("googleNews-button");
+            google.style.backgroundColor = "rgb(100,100,100)";
+            google.style.color = "white";
+            google.onmouseover = function(){
+                this.style.backgroundColor = "rgb(50,205,50)";
+            }
+            google.onclick = changeGoogleNewsColor;
+            google.onmouseout = function(){
+                this.style.backgroundColor = "rgb(100,100,100)";
+            }
+            var search = document.getElementById("search-button");
+            search.style.backgroundColor = "rgb(235, 235, 235)";
+            search.style.color = "black";
+            search.onmouseover = function(){
+                this.style.backgroundColor = "rgb(50,205,50)";
+                this.style.color = "white";
+            }
+            search.onmouseout = function(){
+                this.style.backgroundColor = "rgb(235, 235, 235)";
+                this.style.color = "black";
+            }
+            search.onclick = getSources;
+            var xmlHttpRequest = new XMLHttpRequest();
+    
+            xmlHttpRequest.open('GET','/news', true);
+            xmlHttpRequest.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200){
+                    result = xmlHttpRequest.responseText;
+                    parseJSON(result);
+                }
+            }
+            xmlHttpRequest.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            try{
+                xmlHttpRequest.send();
+            }
+            catch
+            {
+                window.alert("JSON file not found");
+                return;
+            }
+
+        }
+
+        function getSources()
+        {
+            xhr = new XMLHttpRequest();
+            xhr.open("GET","/getSources",true);
+            xhr.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhr.onreadystatechange = function ()
+            {
+                if(this.readyState == 4 && this.status == 200)
+                {
+                    response = xhr.responseText;
+                    json = JSON.parse(response);
+                    displaySearchDiv(json);
+                }
+            };
+            try
+            {
+                xhr.send();
+            }
+            catch
+            {
+                window.alert("JSON file not found");
+                return;
+            }
+        }
+
+        function displaySearchDiv(sources)
+        {
+            var google = document.getElementById("googleNews-button");
+            google.style.backgroundColor = "rgb(235, 235, 235)";
+            google.style.color = "black";
+            google.onmouseover = function(){
+                this.style.backgroundColor = "rgb(50,205,50)";
+                this.style.color = "white";
+            }
+            google.onclick = changeGoogleNewsColor;
+            google.onmouseout = function(){
+                this.style.backgroundColor = "rgb(235, 235, 235)";
+                this.style.color = "black";
+            }
+            var search = document.getElementById("search-button");
+            search.style.backgroundColor = "rgb(100,100,100)";
+            search.style.color = "white";
+            search.onmouseover = function(){
+                this.style.backgroundColor = "rgb(50,205,50)";
+                this.style.color = "white";
+            }
+            search.onmouseout = function(){
+                this.style.backgroundColor = "rgb(100,100,100)";
+                this.style.color = "white";
+            }
+            search.onclick = getSources;
+
+            formDiv = document.getElementById("form-div");
+            formDiv.style.display = "block";
+            formDiv.innerHTML = '';
+            document.getElementById("display-content").style.display = 'none';
+            
+            searchForm = document.createElement("form");
+            searchForm.addEventListener("submit",formSubmit);
+        
+            row1 = document.createElement("div");
+            row1.className = "row1";
+            keyWordLabel = document.createElement("label");
+            keyWordLabel.setAttribute("for","keyword");
+            keyWordLabel.innerHTML = "Keyword <span class='asterix'>*</span>";
+            row1.appendChild(keyWordLabel);
+            keyWord = document.createElement("input");
+            keyWord.setAttribute("type","text");
+            keyWord.id = "keyword";
+            keyWord.addEventListener("input", changeKeyword, false);
+            keyWord.required = true;
+            row1.appendChild(keyWord);
+            fromLabel = document.createElement("label");
+            fromLabel.setAttribute("for","from");
+            fromLabel.innerHTML = "From <span class='asterix'>*</span>";
+            row1.appendChild(fromLabel);
+            from = document.createElement("input");
+            from.style.marginLeft = "10px";
+            from.setAttribute("type","date");
+            from.id = "from";
+            from.required = true;
+            today = new Date();
+            from.valueAsDate = new Date(today.getFullYear(), today.getMonth(), today.getDate()-7);
+            row1.appendChild(from);
+            toLabel = document.createElement("label");
+            toLabel.setAttribute("for","to");
+            toLabel.innerHTML = "To <span class='asterix'>*</span>";
+            row1.appendChild(toLabel);
+            to = document.createElement("input");
+            to.setAttribute("type","date");
+            to.id = "to";
+            to.required = true;
+            to.valueAsDate = today;
+            row1.appendChild(to);
+            searchForm.appendChild(row1);
+
+            row2 = document.createElement("div");
+            row2.className = "row2";
+            categoryLabel = document.createElement("label");
+            categoryLabel.setAttribute("for","category");
+            categoryLabel.innerHTML = "Category";
+            row2.appendChild(categoryLabel);
+            category = document.createElement("select");
+            category.id = "category";
+            category.style.textAlignLast = "center";
+            categories = ["all","business","entertainment","general","health","science","sports","technology"];
+            for(i=0;i<categories.length;i++)
+            {
+                option = document.createElement("option");
+                option.innerHTML = categories[i];
+                if(i==0)
+                {
+                    option.selected = true;
+                }
+                option.value = categories[i];
+                category.appendChild(option);
+            }
+            category.onchange = categoryChanged;
+            row2.appendChild(category);
+            sourceLabel = document.createElement("label");
+            sourceLabel.setAttribute("for","source");
+            sourceLabel.innerHTML = "Source";
+            row2.appendChild(sourceLabel);
+            source = document.createElement("select");
+            source.id = "source";
+            source.style.minWidth = "140px";
+            source.style.maxWidth = "140px";
+            source.style.overflow = "hidden";
+            source.style.textAlignLast = "center";
+            option = document.createElement("option");
+            option.innerHTML = "all";
+            option.value = "all";
+            option.selected = true;
+            source.appendChild(option);
+            row2.appendChild(source);
+            searchForm.appendChild(row2);
+    
+            row3 = document.createElement("div");
+            row3.className = "row3";
+            search = document.createElement("input");
+            search.setAttribute("type","submit");
+            search.value = "Search";
+            search.style.fontSize = "13px";
+            search.style.height = "20px";
+            search.style.backgroundColor = "rgb(235,235,235)";
+            search.onmouseover = function(){
+                this.style.backgroundColor = "rgb(50,205,50)";
+                this.style.color = "white";
+            };
+            search.onmouseout = function(){
+                this.style.backgroundColor = "rgb(235,235,235)";
+                this.style.color = "black";
+            };
+            search.style.border = "none";
+            row3.append(search);
+            reset = document.createElement("input");
+            reset.setAttribute("type","reset");
+            reset.value = "Clear";
+            reset.id = "clear";
+            reset.style.fontSize = "13px";
+            reset.style.height = "20px";
+            reset.style.backgroundColor = "rgb(235,235,235)";
+            reset.onmouseover = function(){
+                this.style.backgroundColor = "rgb(50,205,50)";
+                this.style.color = "white";
+            };
+            reset.onmouseout = function(){
+                this.style.backgroundColor = "rgb(235,235,235)";
+                this.style.color = "black";
+            };
+            reset.onclick = function(){
+                event.preventDefault();
+                document.getElementById("news-scroll").style.display = "none";
+                document.getElementById("news-scroll2").style.display = "none";
+                document.getElementById("showMoreOrLess").style.display = "none";
+                document.getElementById("keyword").value = "";
+                var from = document.getElementById("from");
+                today = new Date();
+                fromDate = new Date(today.getFullYear(), today.getMonth(), today.getDate()-7);
+                from.valueAsDate = fromDate;
+                var to = document.getElementById("to");
+                to.valueAsDate = today;
+                var source = document.getElementById("source");
+                source.innerHTML = "";
+                option = document.createElement("option");
+                option.innerHTML = "all";
+                option.value = "all";
+                option.selected = true;
+                source.appendChild(option);
+                var category = document.getElementById("category");
+                category.innerHTML = "";
+                categories = ["all","business","entertainment","general","health","science","sports","technology"];
+                for(i=0;i<categories.length;i++)
+                {
+                    option = document.createElement("option");
+                    option.innerHTML = categories[i];
+                    if(i==0)
+                    {
+                        option.selected = true;
+                    }
+                    option.value = categories[i];
+                    category.appendChild(option);
+                }
+
+            };
+            reset.style.border = "none";
+            row3.append(reset);
+            searchForm.appendChild(row3);
+            formDiv.appendChild(searchForm);
+            categoryChanged();
+        }
+        function changeKeyword(event){
+            document.getElementById("keyword").style.border = "none";
+        }
+        function updateSourceAfterCategory(json){
+            source = document.getElementById('source');
+            source.innerHTML = '';
+            var option = document.createElement("option");
+            option.innerHTML = "all";
+            option.value = "all";
+            option.selected = true;
+            source.appendChild(option);
+            for(var i = 0; i < json['sources'].length; i++){
+                var op = document.createElement("option");
+                op.innerHTML = json['sources'][i]['name'];
+                op.value = json['sources'][i]['id'];
+                source.appendChild(op);
+            }
+        }
+        function categoryChanged(){
+            var category = document.getElementById("category").value;
+            xhr = new XMLHttpRequest();
+            xhr.open("GET","/getSources?category="+category,true);
+            xhr.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhr.onreadystatechange = function ()
+            {
+                if(this.readyState == 4 && this.status == 200)
+                {
+                    response = xhr.responseText;
+                    json = JSON.parse(response);
+                    updateSourceAfterCategory(json);
+                }
+            };
+            try
+            {
+                xhr.send();
+            }
+            catch
+            {
+                window.alert("JSON file not found");
+                return;
+            }
+            
+        }
+
+
+        function formSubmit(event)
+        {
+            event.preventDefault();
+            var keyword = document.getElementById('keyword').value;
+            var fromDate = document.getElementById('from').value;
+            var toDate = document.getElementById('to').value;
+            var source = document.getElementById('source').value;
+            var toDateDate = new Date(toDate);
+            var fromDateDate = new Date(fromDate);
+            if(toDateDate.getTime() < fromDateDate.getTime()){
+                window.alert("Incorrect time");
+                return;
+            }
+            xhrNews = new XMLHttpRequest();
+            url = "keyword="+keyword+"&fromDate="+fromDate+"&toDate="+toDate+"&source="+source;
+            xhrNews.open("GET","/news/newsSearch?keyword="+keyword+"&fromDate="+fromDate+"&toDate="+toDate+"&source="+source,true);
+            xhrNews.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            xhrNews.onreadystatechange = function ()
+            {
+                if(this.readyState == 4 && this.status == 200)
+                {
+                    response = xhrNews.responseText;
+                    json = JSON.parse(response);
+                    updateNews(json);
+                }
+                else if(this.readyState == 4 && this.status == 404){
+                    response = xhrNews.responseText;
+                    window.alert(response);
+                }
+            };
+            try
+            {
+                xhrNews.send();
+            }
+            catch
+            {
+                window.alert("JSON file not found");
+                return;
+            }
+        }
+        function updateNews(result){
+            var topHeadlines = result.topHeadlines;
+            var images = []
+            var title = []
+            var description = []
+            var url = []
+            var author = []
+            var source = []
+            var publishedAt = []
+            for(var i in topHeadlines){
+                images[i] = topHeadlines[i].urlToImage;
+                title[i] = topHeadlines[i].title;
+                description[i] = topHeadlines[i].description;
+                url[i] = topHeadlines[i].url;
+                author[i] = topHeadlines[i].author;
+                source[i] = topHeadlines[i].source.name;
+                publishedAt[i] = topHeadlines[i].publishedAt;
+            }
+            if (images.length == 0){
+                newsScroll = document.getElementById("news-scroll");
+                newsScroll.style.display = "block";
+                newsScroll.innerHTML = "No results";
+                newsScroll.style.marginLeft = "410px";
+                newsScroll.style.marginTop = "20px";
+                return;
+            }
+            displayTopNewsCards(images, title, description, url, author, source, publishedAt, 0, Math.min(5, images.length));
+        }
+        function displayTopNewsCards(images, title, description, url, author, source, publishedAt, lowerBound, upperBound){
+            newsScroll = document.getElementById("news-scroll");
+            newsScroll2 = document.getElementById("news-scroll2");
+            if(lowerBound == 0){
+                newsScroll.style.display = "block";
+                newsScroll2.style.display = "none";
+                newsScroll.innerHTML = '';
+                newsScroll2.innerHTML = '';
+                newsScroll.style.marginLeft = "150px";
+                newsScroll.style.marginTop = "20px";
+            }
+            else{
+                newsScroll2.style.display = "block";
+                newsScroll2.style.marginLeft = "150px";
+            }
+            for(var i = lowerBound; i < upperBound; i++){
+                article = document.createElement("div");
+                article.className = "article";
+                article.id = "article";
+                article.style.overflow = "hidden";
+                article.setAttribute("onclick","addMoreContent(\""+i+"\")");
+                imageDiv = document.createElement("div");
+                imageDiv.style.float = "left";
+                imageDiv.style.marginLeft = "15px";
+                imageDiv.style.marginTop = "10px"
+                imageDiv.style.marginBottom = "15px";
+                img  = document.createElement("img");
+                img.setAttribute("src",images[i]);
+                img.style.height = "80px";
+                img.style.width = "80px";
+                img.style.objectFit = "cover";
+                imageDiv.appendChild(img);
+                article.appendChild(imageDiv);
+                contentDiv = document.createElement("div");
+                contentDiv.id = "contentDiv";
+                titleDiv = document.createElement("div");
+                titleDiv.style.textAlign = "left";
+                titleDiv.style.alignContent = "left";
+                titleDiv.style.width = "600px";
+                titleDiv.style.fontWeight='bold';
+                titleDiv.style.fontSize = '14px';  
+                titleDiv.innerHTML = title[i]+"<br/>";
+                contentDiv.appendChild(titleDiv);
+                descriptionDiv = document.createElement("div");
+                descriptionDiv.className = "descDiv";
+
+                descriptionDiv.id = "description";
+            
+                descriptionDiv.innerHTML = "";
+                descriptions = description[i].split(" ");
+                
+                var divLength = 92;
+                var k = 0;
+                var c = 0;
+                while(k < divLength && c < descriptions.length){
+                    if(k + descriptions[c].length < divLength){
+                        descriptionDiv.innerHTML = descriptionDiv.innerHTML + descriptions[c] + " ";
+                        k = descriptionDiv.innerHTML.length;
+                        c += 1;
+                    }
+                    else{
+                        break;
+                    }
+                    
+                }
+                if(c != descriptions.length){
+                    descriptionDiv.innerHTML = descriptionDiv.innerHTML.substring(0, descriptionDiv.innerHTML.length - 1);
+                    descriptionDiv.innerHTML += "...";
+                }
+                
+                contentDiv.appendChild(descriptionDiv);
+                article.appendChild(contentDiv);
+                expandedArticle = document.createElement("div");
+                expandedArticle.id = "expandedArticle";
+                expandedArticle.className = "expandedArticle";
+                expandedArticle.style.display = "none";
+                expandedImageDiv = document.createElement("div");
+                expandedImageDiv.style.float = "left";
+                expandedImageDiv.style.marginLeft = "15px";
+                expandedImageDiv.style.marginTop = "10px"
+                expandedImageDiv.style.marginBottom = "-40px";
+                expandedImg = document.createElement("img");
+                expandedImg.setAttribute("src",images[i]);
+                expandedImg.style.height = "80px";
+                expandedImg.style.width = "80px";
+                expandedImg.style.marginBottom = "80px";
+                expandedImg.style.objectFit = "cover";
+                expandedImageDiv.appendChild(expandedImg);
+                expandedArticle.appendChild(expandedImageDiv);
+                closeButton = document.createElement("div");
+                closeButton.style.float = ""
+                closeButton.style.marginLeft = "660px";
+                closeButton.style.marginTop = "5px";
+                closeButton.style.color = "rgb(138,43,226)";
+                closeButton.innerHTML = "&times";
+                closeButton.style.fontSize = "20px";
+                closeButton.setAttribute("onclick","reduceContent(\""+i+"\")");
+                expandedArticle.appendChild(closeButton);
+                expandedContentDiv = document.createElement("div");
+                expandedContentDiv.id = "expandedContentDiv";
+                expandedTitle = document.createElement("div");
+                expandedTitle.style.fontWeight='bold';
+                expandedTitle.style.fontSize = '14px';  
+                expandedTitle.style.width = "600px";
+                expandedTitle.innerHTML = title[i]+" <br>";
+                expandedContentDiv.appendChild(expandedTitle);
+                expandedDescription = document.createElement("div");
+                // expandedDescription.style.textOverflow = "ellipsis";
+                // expandedDescription.style.height = "20px";
+                expandedDescription.id = "expandedDescription";
+                expandedDescription.style.width = "600px";
+                expandedDescription.style.fontSize = '13px';
+                publishedDate = new Date(publishedAt[i])
+                publishedDateDay = publishedDate.getDate();
+                publishedDateMonth = publishedDate.getMonth()+1;
+                if(publishedDateDay < 10){
+                    publishedDateDay = "0"+publishedDateDay;
+                }
+                if(publishedDateMonth < 10){
+                    publishedDateMonth = "0"+publishedDateMonth;
+                }
+                publishedDt = publishedDate.getMonth()+1+"/"+publishedDate.getDate()+"/"+publishedDate.getFullYear();
+                expandedDescription.innerHTML = "<div style='margin-top:1px'><span style='font-weight:bold'>Author:</span> "+author[i]+"</div>";
+                expandedDescription.innerHTML+="<div style='margin-top:3px'><span style='font-weight:bold'>Source:</span> "+source[i]+"</div>";
+                expandedDescription.innerHTML+="<div style='margin-top:3px;'><span style='font-weight:bold'>Date:</span> "+publishedDateMonth+"/"+publishedDateDay+"/"+publishedDate.getFullYear()+"</div>";
+                expandedDescription.innerHTML+= "<div style='margin-top:3px;position:relative;margin-left:95px;overflow:hidden;'>"+description[i]+"</div>";
+                expandedDescription.innerHTML+= "<div style='margin-top:3px;position:relative;margin-left:95px;margin-bottom:-10px'><a href='"+url[i]+"' target='_blank'> See Original Post </a></div>";
+                expandedContentDiv.appendChild(expandedDescription);
+                expandedArticle.appendChild(expandedContentDiv);
+                if(lowerBound == 0){
+                    newsScroll.appendChild(article);
+                    newsScroll.appendChild(expandedArticle);
+                    newsScroll.innerHTML+="<br>";
+                }
+                else{
+                    newsScroll2.appendChild(article);
+                    newsScroll2.appendChild(expandedArticle);
+                    newsScroll2.innerHTML += "<br/>";
+                }
+                
+            }
+            var moreOrLessDiv = document.getElementById("showMoreOrLess");
+            moreOrLessDiv.style.display = "block";
+            moreOrLessDiv.innerHTML = "";
+            if(images.length > upperBound && lowerBound == 0){
+                var showMore = document.createElement("button");
+                showMore.innerHTML = "Show More";
+                showMore.style.display = "block";
+                showMore.id = "showMore";
+                showMore.style.backgroundColor = "rgb(240,240,240)";
+                showMore.onmouseover = function(){
+                    this.style.backgroundColor = "rgb(50,205,50)";
+                    this.style.color = "white";
+                };
+                showMore.onmouseout = function(){
+                    this.style.backgroundColor = "rgb(240,240,240)";
+                    this.style.color = "black";
+                };
+                showMore.onclick = function(){
+                    displayTopNewsCards(images, title, description, url, author, source, publishedAt, 5, Math.min(15, images.length));
+                };
+                showMore.style.marginLeft = "480px";
+                showMore.style.border = "none";
+                showMore.style.fontSize = "15px";
+                showMore.style.fontFamily = "Times New Roman";
+                showMore.style.padding = "5px";
+                moreOrLessDiv.appendChild(showMore);
+            }
+            else if(lowerBound > 0 && upperBound > 5){
+                var showLess = document.createElement("button");
+                showLess.innerHTML = "Show Less";
+                showLess.style.display = "block";
+                showLess.id = "showLess";
+                showLess.style.backgroundColor = "rgb(240,240,240)";
+                showLess.onmouseover = function(){
+                    this.style.backgroundColor = "rgb(50,205,50)";
+                    this.style.color = "white";
+                };
+                showLess.onmouseout = function(){
+                    this.style.backgroundColor = "rgb(240,240,240)";
+                    this.style.color = "black";
+                };
+                showLess.onclick = function(){
+                    displayTopNewsCards(images, title, description, url, author, source, publishedAt, 0, Math.min(5, images.length));
+                };
+                showLess.style.marginLeft = "480px";
+                showLess.style.border = "none";
+                showLess.style.fontSize = "15px";
+                showLess.style.fontFamily = "Times New Roman";
+                showLess.style.padding = "5px";
+                moreOrLessDiv.appendChild(showLess);
+                
+            }
+        }
+
+        function addMoreContent(i){
+            expandedArticle = document.getElementsByClassName("expandedArticle")[i]
+            expandedArticle.style.display = "block";
+            document.getElementsByClassName("article")[i].style.display = "none";
+        }
+        function reduceContent(i){
+            article = document.getElementsByClassName("article")[i]
+            article.style.display = "block";
+            document.getElementsByClassName("expandedArticle")[i].style.display = "none";
+        }
+
+        function parseJSON(result){
+            jsonObj = JSON.parse(result);
+            var top5Headlines = jsonObj['top5Headlines'];
+            var images = [];
+            var title = [];
+            var description = [];
+            var url = [];
+            for(var i in top5Headlines){
+                images[i] = top5Headlines[i].urlToImage;
+                title[i] = top5Headlines[i].title;
+                description[i] = top5Headlines[i].description;
+                url[i] = top5Headlines[i].url;
+            }
+            displayCarousel(images, title, description, url, 0);
+            displayWordCloud(jsonObj['wordCloud']);
+            cnn(jsonObj['cnn']);
+            fox(jsonObj['fox']);
+        }
+        function displayWordCloud(wordCloud){
+            document.getElementById("wordcloud").innerHTML = '';
+            var margin = {top: 0, right: 10, bottom: 10, left: 0},
+            width = 300,
+            height = 300;
+
+            var svg = d3.select("#wordcloud").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            var wordScale=d3.scaleLinear().domain([0,40]).range([12,160]).clamp(true);
+            var layout = d3.layout.cloud()
+                .size([width, height])
+                .words(wordCloud.map(function(d) { return {text: d[0],size: d[1], test: "haha"}; }))
+                .padding(5)        
+                .fontSize(function(d) { return wordScale(d.size); })
+                .rotate(function() { return ~~(Math.random() * 2) * 90; })      
+                .on("end", draw);
+
+            layout.start();
+            function draw(words) 
+            {
+                svg
+                .append("g")
+                .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
+                .selectAll("text")
+                    .data(words)
+                .enter().append("text")
+                    .style("font-size", function(d) { return d.size +"px";})
+                    .style("fill", "black")
+                    .attr("text-anchor", "middle")
+                    .style("font-family", "Impact")
+                    .attr("transform", function(d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                    })
+                    .text(function(d) { return d.text; });
+            }
+        }
+
+        function displayCarousel(images, title, description, url, index){
+            if (index == images.length){
+                index = 0;
+            }
+            clearBox("info");
+            var imageElement = document.createElement('img');
+            imageElement.src = images[index];
+            imageElement.style.width = "440px";
+            imageElement.style.height = "310px";
+            imageElement.style.objectFit = "cover";
+            imageElement.style.cursor = "pointer";
+            imageElement.setAttribute('onclick', 'window.open(\''+url[index]+'\')');
+            imageElement.style.zIndex = "1";
+            document.getElementById("info").appendChild(imageElement);
+
+            var textElement = document.createElement('div');
+            textElement.setAttribute('class', 'highlightText');
+            var innerTitle = document.createElement('div');
+            innerTitle.innerHTML = title[index];
+            innerTitle.style.fontSize="13";
+            innerTitle.style.paddingTop="5";
+            innerTitle.style.fontWeight="bold";
+            textElement.appendChild(innerTitle);
+
+            var innerDescription = document.createElement('div');
+            innerDescription.innerHTML = description[index];
+            innerDescription.style.fontSize="12";
+            innerDescription.style.paddingTop="5";
+            textElement.appendChild(innerDescription);
+
+            document.getElementById("info").appendChild(textElement);
+            index += 1;
+            setTimeout(displayCarousel, 5000, images, title, description, url, index);
+        }
+
+        function cnn(headlines)
+        {
+            cnnCards = document.getElementsByClassName("cnn-table")[0];
+            cnnCards.innerHTML = '';
+            tr = document.createElement("tr");
+            for(var i in headlines)
+            {
+                td = document.createElement("td");
+                card = document.createElement("div");
+                card.setAttribute("onclick","window.open(\""+headlines[i]["url"]+"\")");
+                card.className = "news-card";
+                imageDiv = document.createElement("div");
+                img  = document.createElement("img");
+                img.setAttribute("src",headlines[i]["urlToImage"]);
+                img.style.height = "132px";
+                img.style.width = "189px";
+                img.style.objectFit = "cover";
+                img.style.borderRadius = "7px";
+                imageDiv.appendChild(img);
+                card.appendChild(imageDiv);
+                title = document.createElement("div");
+                title.style.padding = "5px";
+                title.style.fontWeight='bold';
+                title.style.textAlign = "center";
+                title.style.alignContent = "center";
+                title.style.fontSize = '13px';  
+                title.innerHTML = headlines[i]["title"]+" <br>";
+                card.appendChild(title);
+                description = document.createElement("div");
+                description.style.padding='2px';
+                description.style.fontSize = '12px';
+                description.style.textAlign = "center";
+                description.style.alignContent = "center";
+                
+                description.innerHTML = headlines[i]["description"]+" <br>";
+                card.appendChild(description);
+                td.appendChild(card);
+                tr.appendChild(td);
+            }
+        
+            cnnCards.appendChild(tr);
+
+        }
+
+        function fox(headlines)
+        {
+            foxCards = document.getElementsByClassName("fox-table")[0];
+            tr = document.createElement("tr");
+            foxCards.innerHTML = '';
+            for(var i in headlines)
+            {
+                td = document.createElement("td");
+                card = document.createElement("div");
+                card.setAttribute("onclick","window.open(\""+headlines[i]["url"]+"\")");
+                card.className = "news-card";
+                imageDiv = document.createElement("div");
+                img  = document.createElement("img");
+                img.setAttribute("src",headlines[i]["urlToImage"]);
+                img.style.height = "132px";
+                img.style.width = "189px";
+                img.style.objectFit = "cover";
+                img.style.borderRadius = "7px";
+                imageDiv.appendChild(img);
+                card.appendChild(imageDiv);
+                title = document.createElement("div");
+                title.style.padding = "5px";
+                title.style.fontWeight='bold';
+                title.style.textAlign = "center";
+                title.style.alignContent = "center";
+                title.style.fontSize = '13px';  
+                title.innerHTML = headlines[i]["title"]+" <br>";
+                card.appendChild(title);
+                description = document.createElement("div");
+                description.style.padding='2px';
+                description.style.fontSize = '12px';
+                description.style.textAlign = "center";
+                description.style.alignContent = "center";
+                
+                description.innerHTML = headlines[i]["description"]+" <br>";
+                card.appendChild(description);
+                td.appendChild(card);
+                tr.appendChild(td);
+            }
+            foxCards.appendChild(tr);
+        }
+        
+        function changeSearchColor(){
+            var google = document.getElementById("googleNews-button");
+            google.style.backgroundColor = "white";
+            google.style.color = "black";
+            var search = document.getElementById("search-button");
+            search.style.backgroundColor = "grey";
+            search.style.color = "white";
+        }
+        function clearBox(id) { 
+            document.getElementById(id).innerHTML = ""; 
+        } 
+        </script>
+    </head>
+    <body onload="changeGoogleNewsColor()">
+        <div class="div-button">
+            <div class="btn-group">
+                <button id = "googleNews-button" onclick="changeGoogleNewsColor()">Google News</button>
+                <button id = "search-button" onclick="changeSearchColor()">Search</button>
+            </div>
+            <div id = "display-content">
+                <table id = "newsHeadlines" class = "table-styling">
+                    <tr>
+                        <td>
+                            <div id="info">
+    
+                            </div>
+                        </td>
+                        <td>
+                            <div id = "wordcloud" class="wordcloud">
+    
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+    
+                <div class = "cnn">
+                    <p> CNN </p>
+                    <hr>
+                    <table class = "cnn-table">
+                
+                    </table>
+                </div>
+                
+                <div class = "fox">
+                    <p> Fox News </p>
+                    <hr>
+                    <table class = "fox-table">
+                        
+                    </table>
+                </div>
+            </div>
+            <div id = "form-div" style = "display: none;">
+
+            </div>
+            <div id = "news-scroll" style = "display: none;">
+            </div>
+            <div id = "news-scroll2" style="display:none;">
+            </div>
+            <div id = "showMoreOrLess" style="display:none;">
+            </div>
+        </div>
+        
+    </body>
+</html>

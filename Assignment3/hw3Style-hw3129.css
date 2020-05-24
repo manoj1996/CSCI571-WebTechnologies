@@ -1,0 +1,101 @@
+table {
+    border-spacing: 7px 0;
+    border-collapse: separate;
+    align-content: center;
+}
+td {
+    padding: 0.1em 0;
+}
+* {
+    box-sizing: border-box;
+}
+ul{
+    align-content: center;
+}
+li {
+    display:inline-block;
+    margin: 0.7em 0.75em;
+    align-content: center;
+    }
+a{
+    text-decoration: none;
+    color:gray
+}
+a:link{
+    color:gray;
+}
+a:visited{
+    color: black;
+}
+
+.div1{
+    margin:auto;
+    margin-top: 30px;
+    text-align: center;
+    width:550px;
+    height:120px;
+    border: 1px solid black;
+    align-content: center;
+}
+.div2{
+    margin: auto;
+    text-align: center;
+    font-family: Georgia;
+    margin-top: -11px;
+    font-size: 72%;
+    font-style: italic;
+    color: gray;
+    align-content: center;
+    margin-left: -38px;
+}
+.copyright{
+    font-family: Georgia;
+    font-size:60%;
+    font-style: italic;
+    align-content: center;
+    text-align: center;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    color: gray;
+}
+.social-media-div{
+    margin: auto;
+    align-content: center;
+    margin-bottom: 40px;
+    margin-left: 42.5%;
+    
+}
+.social-media-icon{
+    width:30px;
+    height:30px;
+    object-fit: cover;
+    padding: 4px;
+}
+.poster-image{
+    width:315px;
+    height: 315px; 
+    object-fit: cover;
+}
+body {
+    margin: 0;
+    font-family: Georgia;
+}
+.header {
+    padding-top: 20px;
+    text-align: center;
+    font-family: Georgia;
+    font-size: 48px;
+    color: black;
+}
+.outer-div{
+    width: 650px; 
+    margin-left: auto; 
+    margin-right: auto;
+}
+.table-align-home{
+    padding-top: 75px;
+}
+.table-align-nature{
+    padding-top: 50px;
+}

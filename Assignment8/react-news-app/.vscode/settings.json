@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/4c8db559-ff5f-44f5-a5be-f2866f8edafb/resourceGroups/AppServiceQS-rg/providers/Microsoft.Web/sites/news-react-112",
+    "appService.deploySubpath": "dist"
+}
