@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@emotion/core": "latest",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bootstrap": "^4.4.1",
     "commentbox.io": "^2.0.0",
     "css-loader": "^3.4.2",
